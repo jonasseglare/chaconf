@@ -34,3 +34,4 @@
     (is (= 12 (count solutions)))
     (is (every? #(valid-solution? % instrument-counts)
                 solutions))))
+

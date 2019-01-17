@@ -85,19 +85,26 @@
    {}
    sol))
 
-(defn valid-solution? [solution participants]
-  (= (count-solution-participants solution)
-     participants))
-
+(defn split-session-setup [session-setup]
+  (let [b (select-keys session-setup [::ensembles])]
+    (mapv
+     (fn [session] (assoc b ::participants session))
+     (::sessions session-setup))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  Interface
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn valid-solution? [solution participants]
+  (= (count-solution-participants solution)
+     participants))
 
 (defn teacher-count [solution]
   (apply + (vals solution)))
+
+(defn teacher-counts [solutions]
+  (mapv teacher-count solutions))
 
 (defn show-solutions [solutions]
   (doseq [sol solutions]
@@ -133,14 +140,53 @@
 
 ;; (count (solve setup))
 
+(defn session-count [session-setup]
+  (-> session-setup
+      ::sessions
+      count))
+
 (defn solve-sessions [session-setup]
   {:pre (spec/valid? ::session-setup session-setup)}
-  nil)
+  (let [setups (split-session-setup session-setup)
+        solutions (mapv solve setups)
+        teachers-per-session (mapv (comp set teacher-counts)
+                                   solutions)]
+    teachers-per-session))
+
+
 
 (comment
  
- (do
+  (do
 
+    (def session-setup {::ensembles #{{:violin 2}
+                                      {:violin 1
+                                       :alto 1}
+                                      {:violin 1
+                                       :cello 1}
+                                      {:violin 1
+                                       :piano 1}
+                                      {:violin 1
+                                       :alto 1
+                                       :cello 1}
+                                      {:violin 2
+                                       :alto 1
+                                       :cello 1}}
+                        ::sessions [{:violin 20
+                                     :cello 12
+                                     :alto 5
+                                     :piano 3}
+                                    {:violin 22
+                                     :cello 12
+                                     :alto 4
+                                     :piano 3}]})
+
+    (session-count session-setup)
+    (every? (partial spec/valid? ::setup)
+              (split-session-setup session-setup))
+    (first (split-session-setup session-setup))
+    (solve-sessions session-setup)
+    
    
    )
 
