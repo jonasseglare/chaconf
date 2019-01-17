@@ -21,7 +21,7 @@
 
 (defn split-and-enumerate-lines [src]
   (let [lines (cljstr/split-lines src)]
-    (map (fn [index line] {:index (inc index)
+    (map (fn [index line] {:index index
                            :line line})
          (range (count lines))
          lines)))
@@ -53,7 +53,9 @@
                      header header-line)
               (let [counts (read-counts numbered-lines)]
                 (-> input
-                    (add-at-key k counts)
+                    (add-at-key k (merge header-line
+                                         header
+                                         {:values counts}))
                     (assoc :numbered-lines (drop (count counts)
                                                  numbered-lines))))))
           (merge header-line {:error :failed-to-parse}))))))
@@ -74,7 +76,8 @@
 (defn parse [s]
   (-> s
       split-and-enumerate-lines
-      read-sections))
+      read-sections
+      (assoc :raw s)))
 
 (comment
 
