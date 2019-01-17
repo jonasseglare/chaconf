@@ -64,6 +64,7 @@ java -jar chaconf-0.1.0-SNAPSHOT-standalone.jar resources/config.txt
 If you omit the filename argument, a file chooser dialog will be displayed.
 
 Once the program is running, the file will be loaded and parsed. From the specification, all solutions are computed and displayed on a web page:
+
 ![resources/solution.png](Solution web page)
 
 ## License
