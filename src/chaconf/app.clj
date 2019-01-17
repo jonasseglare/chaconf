@@ -67,12 +67,18 @@
    #{}
    sections))
 
+(def table-style
+  [:style
+   "td, th {border: 1px solid black; padding: 0.5em;}"])
+
 (defn render-count-table [m]
-  [:table
-   [:tr [:th "Instrument"] [:th "Count"]]
-   (for [[k v] m]
-     [:tr
-      [:td k] [:td v]])])
+  (list
+   table-style
+   [:table
+    [:tr [:th "Instrument"] [:th "Count"]]
+    (for [[k v] m]
+      [:tr
+       [:td k] [:td v]])]))
 
 (defn render-single [input setup sol]
   [:body
@@ -120,6 +126,12 @@
       {}
       src)))))
 
+(defn duplicate-name-error [data]
+  [:body
+   [:h1 "Error"]
+   [:p (format "The ensemble name '%s' is used more than once"
+               (-> data first :name))]])
+
 (defn execute [input]
   (if-let [error-code (:error input)]
     (case error-code
@@ -132,7 +144,8 @@
       (cond
         (empty? (:sessions input)) no-session-error
         (empty? (:ensembles input)) no-ensemble-error
-        bad-ensemble-names [:h1 "Error dup"]
+        bad-ensemble-names (duplicate-name-error
+                            bad-ensemble-names)
 
         :default
         (let [session-instruments (instrument-set
@@ -170,5 +183,8 @@
 ;; (process-file (io/file (io/resource "config_bad2.txt")))
 ;; (process-file (io/file (io/resource "config_bad3.txt")))
 ;; (process-file (io/file (io/resource "config_bad4.txt")))
+;; (process-file (io/file (io/resource "config_bad5.txt")))
+;; (process-file (io/file (io/resource "config_bad6.txt")))
+
 
 
