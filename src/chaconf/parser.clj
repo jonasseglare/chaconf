@@ -50,7 +50,8 @@
           (let [header-type (cljstr/lower-case (:type header))
                 k (get section-headers header-type)]
             (if (nil? k)
-              (merge {:error :section-not-recognized} header)
+              (merge {:error :section-not-recognized}
+                     header header-line)
               (let [counts (read-counts numbered-lines)]
                 (-> input
                     (add-at-key k counts)
