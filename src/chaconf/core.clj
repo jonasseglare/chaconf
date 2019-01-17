@@ -112,6 +112,14 @@
     (doseq [[config n] sol]
       (println "   " config ":" n))))
 
+(defn select-solutions-with-teacher-counts
+  [teacher-count-set solutions]
+  {:pre [(set? teacher-count-set)]}
+  (filter
+   (comp (partial contains? teacher-count-set)
+         teacher-count)
+   solutions))
+
 (defn solve [setup]
   (valididate-setup setup)
   (let [model (Model. "Chaconf")
@@ -150,8 +158,17 @@
   (let [setups (split-session-setup session-setup)
         solutions (mapv solve setups)
         teachers-per-session (mapv (comp set teacher-counts)
-                                   solutions)]
-    teachers-per-session))
+                                   solutions)
+        common-teacher-counts (apply cljset/intersection
+                                     teachers-per-session)
+        sliced (map
+                (partial
+                 select-solutions-with-teacher-counts
+                 common-teacher-counts)
+                solutions)]
+    {:all solutions
+     :sliced sliced
+     :teacher-counts common-teacher-counts}))
 
 
 
@@ -185,7 +202,10 @@
     (every? (partial spec/valid? ::setup)
               (split-session-setup session-setup))
     (first (split-session-setup session-setup))
-    (solve-sessions session-setup)
+    (->> session-setup
+         solve-sessions
+         :teacher-counts
+         )
     
    
    )
