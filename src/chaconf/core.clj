@@ -89,6 +89,13 @@
   (= (count-solution-participants solution)
      participants))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;  Interface
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn teacher-count [solution]
   (apply + (vals solution)))
 
@@ -134,42 +141,6 @@
  
  (do
 
-   (def instrument-counts {:violin 20
-                           :cello 12
-                           :alto 5
-                           :piano 3})
-
-   (def instrument-counts2 {:violin 22
-                            :cello 12
-                            :alto 4
-                            :piano 3})
-
-   (instrument-set instrument-counts)
-
-   (def configs #{{:violin 2}
-                  {:violin 1
-                    :alto 1}
-                  {:violin 1
-                    :cello 1}
-                  {:violin 1
-                   :piano 1}
-                  {:violin 1
-                   :alto 1
-                   :cello 1}
-                  {:violin 2
-                   :alto 1
-                   :cello 1}})
-
-   (def setup {::participants instrument-counts
-               ::ensembles configs})
-
-   (show-solutions (solve setup))
-
-   (def session-setup {::sessions [instrument-counts
-                                   instrument-counts2]
-                       ::ensembles configs})
-
-   (solve-sessions session-setup)
    
    )
 

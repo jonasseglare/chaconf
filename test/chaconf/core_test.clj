@@ -1,7 +1,36 @@
 (ns chaconf.core-test
   (:require [clojure.test :refer :all]
-            [chaconf.core :refer :all]))
+            [chaconf.core :refer :all :as chaconf]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(def instrument-counts {:violin 20
+                        :cello 12
+                        :alto 5
+                        :piano 3})
+
+(def instrument-counts2 {:violin 22
+                         :cello 12
+                         :alto 4
+                         :piano 3})
+
+(def configs #{{:violin 2}
+               {:violin 1
+                :alto 1}
+               {:violin 1
+                :cello 1}
+               {:violin 1
+                :piano 1}
+               {:violin 1
+                :alto 1
+                :cello 1}
+               {:violin 2
+                :alto 1
+                :cello 1}})
+
+(def setup {::chaconf/participants instrument-counts
+            ::chaconf/ensembles configs})
+
+(deftest basic-solving
+  (let [solutions (solve setup)]
+    (is (= 12 (count solutions)))
+    (is (every? #(valid-solution? % instrument-counts)
+                solutions))))
