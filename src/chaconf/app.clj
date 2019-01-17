@@ -80,31 +80,66 @@
       [:tr
        [:td k] [:td v]])]))
 
-(defn render-single [input setup sol]
+(defn render-solution [sol input ensemble-name-lookup]
+  (let [inst (vec (instrument-set (:ensembles input)))]
+    [:table
+     [:tr
+      [:th "Ensemble"]
+      (map (fn [i] [:th {:colspan 2} i]) inst)
+      [:th "Count"]]
+     (for [[ensemble n] sol]
+       [:tr
+        [:td (get ensemble-name-lookup ensemble)]
+        (for [inst inst]
+          (if-let [m (get ensemble inst)]
+            (list [:td m "n"] [:td (* m n)])
+            (list [:td][:td])))
+        [:td n]])]))
+
+(defn render-solution-set [sol input ensemble-label-map]
+  (list
+   (if (empty? sol)
+     [:p "No solutions found"]
+     (list
+      (let [sol-count (count sol)]
+        [:p (format "Found %d solution(s)" sol-count)]
+        (for [[index single-sol] (map vector  (range) sol)]
+          (list
+           [:h2 (format "Solution %d/%d: %d teachers"
+                        (inc index) sol-count
+                        (core/teacher-count single-sol))]
+           (render-solution single-sol input
+                            ensemble-label-map))))))))
+
+(defn render-single [input setup sol ensemble-name-lookup]
   [:body
    [:h1 "Solution"]
    [:h2 "Participants"]
    (render-count-table (first (::core/sessions setup)))
    [:h2 "Solutions"]
-   (let [sol (-> sol
-                 :all
-                 first)]
-     (list
-      (if (empty? sol)
-        [:p "No solutions found"]
-        [:p (format "Found %d solution(s)" (count sol))])))])
+   (-> sol
+       :all
+       first
+       (render-solution-set input ensemble-name-lookup))])
+
+
 
 (defn render-multiple [input sol])
 
 (defn execute-validated [input]
-  (let [session-setup {::core/ensembles
-                       (mapv :values (:ensembles input))
+  (let [ensembles (:ensembles input)
+        session-setup {::core/ensembles
+                       (mapv :values ensembles)
                        ::core/sessions
                        (mapv :values (:sessions input))}
         sol (core/solve-sessions session-setup)
-        session-count (count (:sessions input))]
+        session-count (count (:sessions input))
+        ensemble-name-lookup (zipmap
+                              (map :values ensembles)
+                              (map :name ensembles))]
+    (println "Lookup" ensemble-name-lookup)
     (if (= 1 (count (:sessions input)))
-      (render-single input session-setup sol)
+      (render-single input session-setup sol ensemble-name-lookup)
       (render-multiple input sol))))
 
 (def no-session-error [:body
