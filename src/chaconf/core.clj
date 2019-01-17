@@ -37,12 +37,15 @@
   {:pre [(coll? coll)]}
   (zipmap coll (range (count coll))))
 
+(defn min-nil [a b]
+  (if (nil? a) b
+      (min a b)))
+
 (defn compute-max-ensemble-count [participants ensemble]
   (transduce
    (comp (map (fn [[k v]]
-                [(get participants k) v]))
-         (filter (fn [[x _]] (not (nil? x))))
-         (map (fn [[p v]] (int (Math/floor (/ p v))))))
+                [(or (get participants k) 0) v]))
+         (map (fn [[p v]] (println "p=" p " v=" v) (int (Math/floor (/ p v))))))
    min
    Integer/MAX_VALUE
    ensemble))
@@ -91,14 +94,22 @@
      (fn [session] (assoc b ::participants session))
      (::sessions session-setup))))
 
+(defn drop-zero-entries [m]
+  (transduce
+   (filter (fn [[k v]] (not (zero? v))))
+   conj
+   {}
+   m))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  Interface
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn valid-solution? [solution participants]
-  (= (count-solution-participants solution)
-     participants))
+  (println "counted="(count-solution-participants solution) " part=" participants)
+  (= (drop-zero-entries (count-solution-participants  solution))
+     (drop-zero-entries participants)))
 
 (defn teacher-count [solution]
   (apply + (vals solution)))
@@ -130,6 +141,7 @@
         config-map (assign-indices configs)
         max-per-ensemble (vec (map (partial compute-max-ensemble-count participants)
                                    configs))
+        _ (println "max=" max-per-ensemble)
         vars (mapv (fn [c v]
                      (.intVar model (str c) 0 v))
                    configs

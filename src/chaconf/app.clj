@@ -279,6 +279,8 @@
          JOptionPane/ERROR_MESSAGE)))))
 
 ;; (process-file (io/file (io/resource "config.txt")))
+;; (process-file (io/file (io/resource "miniconfig.txt")))
+;; (process-file (io/file (io/resource "miniconfig2.txt")))
 ;; (process-file (io/file (io/resource "config_single.txt")))
 ;; (process-file (io/file (io/resource "config_bad0.txt")))
 ;; (process-file (io/file (io/resource "config_bad1.txt")))
