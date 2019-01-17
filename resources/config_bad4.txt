@@ -1,0 +1,11 @@
+Session avant-midi:
+Violin 20
+Cello 12
+Alto 5
+Piano 3
+
+Session après-midi:
+Violin 22
+Cello 12
+Alto 4
+Piano 3

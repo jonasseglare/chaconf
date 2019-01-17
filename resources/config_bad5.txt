@@ -1,0 +1,34 @@
+Session après-midi:
+Violin 22
+Cello 12
+Alto 4
+Piano 3
+
+Ensemble V+V:
+Violin 2
+
+Ensemble V+A:
+Violin 1
+Alto 1
+
+Ensemble V+C:
+Violin 1
+Cello 1
+
+Ensemble V+P:
+Violin 1
+Piano 1
+
+Ensemble V+P:
+Violin 1
+Piano 2
+
+Ensemble V+A+C:
+Violin 1
+Alto 1
+Cello 1
+
+Ensemble 2V+A+C:
+Violin 2
+Alto 1
+Cello 1
