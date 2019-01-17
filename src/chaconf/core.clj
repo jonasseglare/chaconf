@@ -45,7 +45,7 @@
   (transduce
    (comp (map (fn [[k v]]
                 [(or (get participants k) 0) v]))
-         (map (fn [[p v]] (println "p=" p " v=" v) (int (Math/floor (/ p v))))))
+         (map (fn [[p v]] (int (Math/floor (/ p v))))))
    min
    Integer/MAX_VALUE
    ensemble))
@@ -107,7 +107,6 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn valid-solution? [solution participants]
-  (println "counted="(count-solution-participants solution) " part=" participants)
   (= (drop-zero-entries (count-solution-participants  solution))
      (drop-zero-entries participants)))
 
@@ -141,7 +140,6 @@
         config-map (assign-indices configs)
         max-per-ensemble (vec (map (partial compute-max-ensemble-count participants)
                                    configs))
-        _ (println "max=" max-per-ensemble)
         vars (mapv (fn [c max-value]
                      (.intVar model (str c)
                               0 max-value))
