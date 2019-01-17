@@ -121,6 +121,14 @@
             (render-solution single-sol input
                              ensemble-label-map)))))))))
 
+(def footer
+  (list
+   [:h1 "About"]
+   [:p "Generated using Chaconf"]
+   [:div
+    [:a {:href "https://github.com/jonasseglare/chaconf"}
+     "https://github.com/jonasseglare/chaconf"]]))
+
 (defn render-single [input setup sol ensemble-name-lookup]
   [:body
    table-style
@@ -131,7 +139,8 @@
    (-> sol
        :all
        first
-       (render-solution-set input ensemble-name-lookup))])
+       (render-solution-set input ensemble-name-lookup))
+   footer])
 
 (defn render-multiple [input setup sol ensemble-name-lookup]
   [:body
@@ -156,7 +165,8 @@
          [:h2 (format "Session %s" (:name session-info))]
          (render-solution-set session-sol
                               input
-                              ensemble-name-lookup)))))])
+                              ensemble-name-lookup)))))
+   footer])
 
 
 
