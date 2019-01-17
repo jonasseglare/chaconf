@@ -42,7 +42,6 @@
 ;; (read-counts [{:line "   Violin  4 " :index 8}])
 
 (defn read-section [input]
-  (println "Read input from" input)
   (let [numbered-lines (drop-blanks (:numbered-lines input))]
     (if (not (empty? numbered-lines))
       (let [[header-line & numbered-lines] numbered-lines]
@@ -74,7 +73,7 @@
 
 (defn parse [s]
   (-> s
-      split-and-enumarate-lines
+      split-and-enumerate-lines
       read-sections))
 
 (comment
