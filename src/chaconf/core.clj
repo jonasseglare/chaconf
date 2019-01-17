@@ -142,8 +142,9 @@
         max-per-ensemble (vec (map (partial compute-max-ensemble-count participants)
                                    configs))
         _ (println "max=" max-per-ensemble)
-        vars (mapv (fn [c v]
-                     (.intVar model (str c) 0 v))
+        vars (mapv (fn [c max-value]
+                     (.intVar model (str c)
+                              0 max-value))
                    configs
                    max-per-ensemble)
         pre-eqs (build-eqs configs)

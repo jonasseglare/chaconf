@@ -1,7 +1,7 @@
-Session après-midi:
-Violin 220
+Session afternoon:
+Violin 20
 Cello 12
-Alto 4
+Alto 5
 Piano 3
 
 Ensemble V+V:
