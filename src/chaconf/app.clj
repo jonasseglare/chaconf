@@ -47,40 +47,43 @@
       src)))))
 
 (defn execute [input]
-  (if-let [error-code (:error input)]
-    (case error-code
-      :failed-to-parse (htmloutput/failed-to-parse input)
-      :section-not-recognized (htmloutput/section-not-recognized input))
-    (let [input (compress-sections input)
-          bad-ensemble-names (find-duplicates
-                              :name
-                              (:ensembles input))]
-      (cond
-        (empty? (:sessions input)) htmloutput/no-session-error
-        (empty? (:ensembles input)) htmloutput/no-ensemble-error
-        bad-ensemble-names (htmloutput/duplicate-name-error
-                            bad-ensemble-names)
+  [:html
+   (if-let [error-code (:error input)]
+     (case error-code
+       :failed-to-parse (htmloutput/failed-to-parse input)
+       :section-not-recognized (htmloutput/section-not-recognized input))
+     (let [input (compress-sections input)
+           bad-ensemble-names (find-duplicates
+                               :name
+                               (:ensembles input))]
+       (cond
+         (empty? (:sessions input)) htmloutput/no-session-error
+         (empty? (:ensembles input)) htmloutput/no-ensemble-error
+         bad-ensemble-names (htmloutput/duplicate-name-error
+                             bad-ensemble-names)
 
-        :default
-        (let [session-instruments (core/instrument-set
-                                   (:sessions input))
-              ensemble-instruments (core/instrument-set
-                                    (:ensembles input))
-              instrument-diff (cljset/difference
-                               session-instruments
-                               ensemble-instruments)]
-          (if (empty? instrument-diff)
-            (htmloutput/execute-validated input)
-            (htmloutput/uncovered-instruments instrument-diff)))))))
+         :default
+         (let [session-instruments (core/instrument-set
+                                    (:sessions input))
+               ensemble-instruments (core/instrument-set
+                                     (:ensembles input))
+               instrument-diff (cljset/difference
+                                session-instruments
+                                ensemble-instruments)]
+           (if (empty? instrument-diff)
+             (htmloutput/execute-validated input)
+             (htmloutput/uncovered-instruments instrument-diff))))))])
 
-(defn render-output [hiccup-data]
-  (let [tmp-file (File/createTempFile "chaconf" ".html")]
-    (spit tmp-file
-          (hiccup/html
-           (page/html5
-            hiccup-data)))
-    (.browse (Desktop/getDesktop)
-             (.toURI tmp-file))))
+(defn render-output [[data-type data]]
+  (case data-type
+    :html (let [tmp-file (File/createTempFile
+                          "chaconf" ".html")]
+            (spit tmp-file
+                  (hiccup/html
+                   (page/html5
+                    data)))
+            (.browse (Desktop/getDesktop)
+                     (.toURI tmp-file)))))
 
 (defn process-file [filename]
   (-> filename
