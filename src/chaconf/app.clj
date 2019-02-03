@@ -47,32 +47,36 @@
       src)))))
 
 (defn execute [input]
-  [:html
-   (if-let [error-code (:error input)]
-     (case error-code
-       :failed-to-parse (htmloutput/failed-to-parse input)
-       :section-not-recognized (htmloutput/section-not-recognized input))
-     (let [input (compress-sections input)
-           bad-ensemble-names (find-duplicates
-                               :name
-                               (:ensembles input))]
-       (cond
-         (empty? (:sessions input)) htmloutput/no-session-error
-         (empty? (:ensembles input)) htmloutput/no-ensemble-error
-         bad-ensemble-names (htmloutput/duplicate-name-error
-                             bad-ensemble-names)
-
-         :default
-         (let [session-instruments (core/instrument-set
-                                    (:sessions input))
-               ensemble-instruments (core/instrument-set
-                                     (:ensembles input))
-               instrument-diff (cljset/difference
-                                session-instruments
-                                ensemble-instruments)]
-           (if (empty? instrument-diff)
-             (htmloutput/execute-validated input)
-             (htmloutput/uncovered-instruments instrument-diff))))))])
+  (if-let [error-code (:error input)]
+    [:html (case error-code
+             :failed-to-parse
+             (htmloutput/failed-to-parse input)
+             :section-not-recognized
+             (htmloutput/section-not-recognized input))]
+    (let [input (compress-sections input)
+          bad-ensemble-names (find-duplicates
+                              :name
+                              (:ensembles input))]
+      (cond
+        (empty? (:sessions input)) [:html
+                                    htmloutput/no-session-error]
+        (empty? (:ensembles input)) [:html
+                                     htmloutput/no-ensemble-error]
+        bad-ensemble-names [:html
+                            (htmloutput/duplicate-name-error
+                             bad-ensemble-names)]
+        :default
+        (let [session-instruments (core/instrument-set
+                                   (:sessions input))
+              ensemble-instruments (core/instrument-set
+                                    (:ensembles input))
+              instrument-diff (cljset/difference
+                               session-instruments
+                               ensemble-instruments)]
+          (if (empty? instrument-diff)
+            [:html (htmloutput/execute-validated input)]
+            [:html (htmloutput/uncovered-instruments
+                    instrument-diff)]))))))
 
 (defn render-output [[data-type data]]
   (case data-type
