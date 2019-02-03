@@ -181,6 +181,12 @@
      :sliced sliced
      :teacher-counts common-teacher-counts}))
 
+(defn instrument-set [sections]
+  (transduce
+   (comp (map (comp set keys :values)))
+   cljset/union
+   #{}
+   sections))
 
 
 (comment
