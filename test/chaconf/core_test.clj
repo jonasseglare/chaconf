@@ -64,3 +64,16 @@
                :all
                first)
            (solve setup)))))
+
+
+(deftest solution-ordering-test
+  (is (= -1 (compare (get-ordering-vector
+                      {{:violin 2} 1 {:cello 3} 2})
+                     (get-ordering-vector
+                      {{:violin 2} 2 {:cello 3} 1}))))
+  (is (= (sort-by
+          get-ordering-vector
+          [{{:violin 2} 2 {:cello 3} 1}
+           {{:violin 2} 1 {:cello 3} 2}])
+         [{{:violin 2} 1 {:cello 3} 2}
+          {{:violin 2} 2 {:cello 3} 1}])))

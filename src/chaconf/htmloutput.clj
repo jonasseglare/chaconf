@@ -53,7 +53,9 @@
       (map (fn [i] [:th i]) inst)
       (map (fn [i] [:th i " (total)"]) inst)
       [:th "Count"]]
-     (for [[ensemble n] sol]
+     (for [[ensemble n] (sort-by (fn [[e n]]
+                                   (- (core/ensemble-participants e)))
+                                 sol)]
        (when (< 0 n)
          [:tr
           [:td (get ensemble-name-lookup ensemble)]
@@ -161,9 +163,8 @@
                        (mapv :values (:sessions input))}
         sol (core/solve-sessions session-setup)
         session-count (count (:sessions input))
-        ensemble-name-lookup (zipmap
-                              (map :values ensembles)
-                              (map :name ensembles))]
+        ensemble-name-lookup (core/make-ensemble-name-lookup
+                              ensembles)]
     (if (= 1 (count (:sessions input)))
       (render-single input session-setup sol ensemble-name-lookup)
       (render-multiple input session-setup sol ensemble-name-lookup))))

@@ -130,6 +130,30 @@
          teacher-count)
    solutions))
 
+(defn ensemble-participants [ensemble]
+  (apply + (vals ensemble)))
+
+(defn solution-size-pairs [solution]
+  (sort-by
+   first
+   (reduce
+    (fn [dst [ensemble n]]
+      (update dst (ensemble-participants ensemble)
+              (fn [i]
+                (+ (or i 0) n))))
+    {}
+    solution)))
+
+
+(defn get-ordering-vector [solution]
+  (reduce
+   into [(teacher-count solution)]
+   (map (fn [[ensemble-size n]]
+          [(- ensemble-size) ;; Maximize
+           n ;; Minimize
+           ])
+        (solution-size-pairs solution))))
+
 (defn solve [setup]
   (valididate-setup setup)
   (let [model (Model. "Chaconf")
@@ -155,7 +179,7 @@
         (let [sol (get-solution model configs vars)]
           (assert (valid-solution? sol participants))
           (recur (conj solutions sol)))
-        (sort-by teacher-count solutions)))))
+        (sort-by get-ordering-vector solutions)))))
 
 ;; (count (solve setup))
 
@@ -188,6 +212,10 @@
    #{}
    sections))
 
+(defn make-ensemble-name-lookup [ensembles]
+  (zipmap
+   (map :values ensembles)
+   (map :name ensembles)))
 
 (comment
  

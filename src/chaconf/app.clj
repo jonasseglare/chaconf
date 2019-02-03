@@ -13,7 +13,9 @@
             [clojure.string :as cljstr]
             [clojure.set :as cljset]
             [clojure.pprint :as pp]
-            [chaconf.htmloutput :as htmloutput])
+            [chaconf.htmloutput :as htmloutput]
+            [chaconf.exceloutput :as exceloutput]
+            [dk.ative.docjure.spreadsheet :as spreadsheet])
   (:gen-class))
 
 
@@ -74,7 +76,11 @@
                                session-instruments
                                ensemble-instruments)]
           (if (empty? instrument-diff)
+
+            ;; Choose output format here.
+            ;;(exceloutput/execute-validated input)
             [:html (htmloutput/execute-validated input)]
+            
             [:html (htmloutput/uncovered-instruments
                     instrument-diff)]))))))
 
@@ -87,7 +93,14 @@
                    (page/html5
                     data)))
             (.browse (Desktop/getDesktop)
-                     (.toURI tmp-file)))))
+                     (.toURI tmp-file)))
+    :excel (let [tmp-file (File/createTempFile
+                           "chaconf" ".xlsx")]
+             (spreadsheet/save-workbook!
+              (.getAbsolutePath tmp-file)
+              data)
+             (.open (Desktop/getDesktop)
+                    tmp-file))))
 
 (defn process-file [filename]
   (-> filename
@@ -107,6 +120,8 @@
   (if (empty? args)
     (get-filename-from-dialog)
     (first args)))
+
+
 
 (defn -main [& args]
   (if-let [filename (get-filename args)
