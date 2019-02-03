@@ -125,6 +125,3 @@
 ;; (process-file (io/file (io/resource "config_bad4.txt")))
 ;; (process-file (io/file (io/resource "config_bad5.txt")))
 ;; (process-file (io/file (io/resource "config_bad6.txt")))
-
-
-
