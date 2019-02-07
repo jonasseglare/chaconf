@@ -78,8 +78,8 @@
           (if (empty? instrument-diff)
 
             ;; Choose output format here.
-            ;;(exceloutput/execute-validated input)
-            [:html (htmloutput/execute-validated input)]
+            (exceloutput/execute-validated input)
+            ;;[:html (htmloutput/execute-validated input)]
             
             [:html (htmloutput/uncovered-instruments
                     instrument-diff)]))))))

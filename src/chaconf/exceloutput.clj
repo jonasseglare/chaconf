@@ -8,9 +8,13 @@
         (map (fn [i] (inc i))
              (range (count sol)))))
 
+(defn zero-to-nil [x]
+  (if (not= x 0)
+    x))
+
 (defn make-table-row [ensemble-name ensemble sol]
   (into [ensemble-name]
-        (map (fn [m] (get m ensemble)) sol)))
+        (map (fn [m] (zero-to-nil (get m ensemble))) sol)))
 
 (defn make-teacher-count-row [sol]
   (into ["Teacher count"]
